@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Downtown Pizzeria - Order Form</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+  <header class="page-header">
+    <h1>Downtown Pizzeria</h1>
+    <p>Place your order below. Fields marked required must be completed.</p>
+  </header>
+
+  <main class="layout">
+    <!-- SIBLING 1: FORM -->
+    <form class="card" action="#" method="post">
+      <!-- Section 1 -->
+      <fieldset>
+        <legend>Customer Information</legend>
+
+        <div class="form-grid">
+          <label for="custName">Name:</label>
+          <input
+            type="text"
+            id="custName"
+            name="custName"
+            required
+            minlength="2"
+            placeholder="Your name"
+            autocomplete="name"
+          />
+
+          <label for="address">Address:</label>
+          <input
+            type="text"
+            id="address"
+            name="address"
+            required
+            placeholder="123 Main St, Edmonton"
+            autocomplete="street-address"
+          />
+
+          <label for="phone">Phone:</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            required
+            pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+            placeholder="123-456-7890"
+            autocomplete="tel"
+          />
+        </div>
+      </fieldset>
+
+      <!-- Section 2 -->
+      <fieldset>
+        <legend>The Order</legend>
+
+        <div class="form-grid">
+          <label>Crust:</label>
+          <div class="options-row" role="group" aria-label="Crust selection">
+            <label class="option">
+              <input type="radio" name="crust" value="thin" required />
+              Thin
+            </label>
+
+            <label class="option">
+              <input type="radio" name="crust" value="classic" />
+              Classic
+            </label>
+
+            <label class="option">
+              <input type="radio" name="crust" value="deep-dish" />
+              Deep Dish
+            </label>
+          </div>
+
+          <label>Toppings:</label>
+          <div class="options-wrap" role="group" aria-label="Toppings selection">
+            <label class="option">
+              <input type="checkbox" name="toppings" value="pepperoni" />
+              Pepperoni
+            </label>
+            <label class="option">
+              <input type="checkbox" name="toppings" value="mushrooms" />
+              Mushrooms
+            </label>
+            <label class="option">
+              <input type="checkbox" name="toppings" value="olives" />
+              Olives
+            </label>
+            <label class="option">
+              <input type="checkbox" name="toppings" value="green-peppers" />
+              Green peppers
+            </label>
+            <label class="option">
+              <input type="checkbox" name="toppings" value="extra-cheese" />
+              Extra cheese
+            </label>
+          </div>
+
+          <label for="qty">Quantity:</label>
+          <input
+            type="number"
+            id="qty"
+            name="qty"
+            required
+            min="1"
+            max="10"
+            placeholder="1"
+          />
+        </div>
+      </fieldset>
+
+      <!-- Section 3 -->
+      <fieldset>
+        <legend>Delivery and Payment</legend>
+
+        <div class="form-grid">
+          <label for="instructions">Delivery instructions:</label>
+          <textarea
+            id="instructions"
+            name="instructions"
+            rows="3"
+            placeholder="Buzz code, leave at door, etc. (optional)"
+          ></textarea>
+
+          <label for="deliveryDT">Preferred delivery date/time:</label>
+          <input
+            type="datetime-local"
+            id="deliveryDT"
+            name="deliveryDT"
+            required
+          />
+
+          <label for="payment">Payment method:</label>
+          <select id="payment" name="payment" required>
+            <option value="" selected disabled>Select one...</option>
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+            <option value="debit">Debit</option>
+          </select>
+        </div>
+
+        <div class="button-row">
+          <button type="submit">Submit Order</button>
+          <button type="reset" class="secondary">Reset</button>
+        </div>
+      </fieldset>
+
+      <p class="note">
+        Phone format must be <strong>123-456-7890</strong>. Quantity must be between <strong>1</strong> and <strong>10</strong>.
+      </p>
+    </form>
+
+    <!-- SIBLING 2: ASIDE (TABLE NOT INSIDE FORM) -->
+    <aside class="card">
+      <h2>Order Summary (Example)</h2>
+
+      <div class="table-wrap">
+        <table>
+          <caption>Static example order summary (does not auto-update)</caption>
+          <thead>
+            <tr>
+              <th scope="col">Item</th>
+              <th scope="col">Details</th>
+              <th scope="col">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Base pizza</td>
+              <td>Large (12&quot;), Thin crust</td>
+              <td>$16.99</td>
+            </tr>
+            <tr>
+              <td>Toppings</td>
+              <td>Mushrooms, Olives, Extra cheese</td>
+              <td>$4.50</td>
+            </tr>
+            <tr>
+              <td>Delivery fee</td>
+              <td>Standard delivery</td>
+              <td>$3.99</td>
+            </tr>
+            <tr class="total-row">
+              <td>Total</td>
+              <td>(example total)</td>
+              <td>$25.48</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="page-footer">
+    <small>Note: Delivery date/time should be in the future.</small>
+  </footer>
+</body>
+</html>
