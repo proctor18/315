@@ -1,65 +1,37 @@
-/* --- Base page styling --- */
+/* ===== Base ===== */
 * { box-sizing: border-box; }
-
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-family: system-ui, Arial, sans-serif;
   background: #f3f4f6;
   color: #111827;
 }
-
-.page-header {
-  padding: 24px 16px 8px;
+.page-header, .page-footer, .layout {
   max-width: 1100px;
   margin: 0 auto;
 }
-
-.page-header h1 {
-  margin: 0 0 6px;
-}
-
-.page-header p {
-  margin: 0;
-  color: #374151;
-}
-
-.page-footer {
-  padding: 12px 16px 24px;
-  max-width: 1100px;
-  margin: 0 auto;
-  color: #6b7280;
-}
-
-/* --- Macro grid: main layout --- */
+.page-header, .page-footer { padding: 16px; }
 .layout {
-  max-width: 1100px;
-  margin: 0 auto;
   padding: 16px;
   display: grid;
-  grid-template-columns: 2fr 1fr; /* form ~66%, aside ~33% */
+  grid-template-columns: 2fr 1fr;
   gap: 16px;
 }
-
-/* Card look */
 .card {
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   padding: 16px;
 }
 
-/* --- Fieldset + micro grid --- */
+/* ===== Form layout (micro grid) ===== */
 fieldset {
   border: 1px solid #d1d5db;
   border-radius: 10px;
   padding: 14px;
   margin: 0 0 16px;
 }
-
-legend {
-  padding: 0 8px;
-  font-weight: 700;
-}
+legend { font-weight: 700; padding: 0 8px; }
 
 .form-grid {
   display: grid;
@@ -67,41 +39,26 @@ legend {
   gap: 10px 12px;
   align-items: center;
 }
+label { text-align: right; font-weight: 600; }
 
-label {
-  text-align: right;
-  font-weight: 600;
-  color: #111827;
-}
-
-/* Inputs */
 input, select, textarea {
   width: 100%;
   padding: 10px;
-  border: 2px solid #d1d5db; /* neutral on load */
+  border: 2px solid #d1d5db;  /* neutral on load */
   border-radius: 8px;
   font: inherit;
   background: #fff;
 }
+textarea { resize: vertical; min-height: 70px; }
 
-textarea {
-  resize: vertical;
-  min-height: 70px;
-}
-
-/* --- Flex groups for options --- */
-.options-row,
-.options-wrap {
+/* ===== Flex groups ===== */
+.options-row, .options-wrap, .button-row {
   display: flex;
   gap: 12px;
 }
-
-.options-wrap {
-  flex-wrap: wrap;
-}
+.options-wrap { flex-wrap: wrap; }
 
 .option {
-  font-weight: 500;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -109,141 +66,52 @@ textarea {
   border: 1px solid #e5e7eb;
   border-radius: 999px;
   background: #f9fafb;
+  font-weight: 500;
 }
+.option input { width: auto; border: 0; padding: 0; }
 
-/* Keep radios/checkboxes from stretching */
-.option input {
-  width: auto;
-  padding: 0;
-  border: none;
-}
-
-/* --- Buttons (Flexbox) --- */
-.button-row {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 12px;
-}
-
+.button-row { justify-content: flex-end; margin-top: 12px; }
 button {
   padding: 10px 14px;
-  border: 1px solid #111827;
   border-radius: 10px;
+  border: 1px solid #111827;
   background: #111827;
-  color: white;
-  font: inherit;
+  color: #fff;
   cursor: pointer;
+  font: inherit;
 }
+button.secondary { background: #fff; color: #111827; }
 
-button.secondary {
-  background: white;
-  color: #111827;
-}
-
-button:hover {
-  filter: brightness(0.95);
-}
-
-/* --- Validation feedback --- */
-
-/* 1) Default: keep required-but-empty controls NEUTRAL (prevents red on load) */
-input:required:invalid,
-select:required:invalid,
-textarea:required:invalid {
-  border-color: #d1d5db;
-}
-
-/* 2) Valid values should stay GREEN */
-input:required:valid,
-select:required:valid,
-textarea:required:valid {
+/* ===== Validation (no red on load for placeholder inputs) ===== */
+input:not(:placeholder-shown):valid,
+select:valid,
+input[type="datetime-local"]:valid {
   border-color: #16a34a;
 }
-
-/* 3) Show RED only after the user has interacted (modern browsers) */
-input:user-invalid,
-select:user-invalid,
-textarea:user-invalid {
-  border-color: #dc2626;
-}
-
-/* 4) For placeholder-based inputs: still give immediate red after typing bad data */
 input:not(:placeholder-shown):invalid {
   border-color: #dc2626;
 }
-
-/* 5) Optional textarea should stay neutral on load (and even when empty) */
-textarea:not(:required) {
-  border-color: #d1d5db;
+/* For controls without placeholder behavior, show red after interaction */
+select:focus:invalid,
+input[type="datetime-local"]:focus:invalid {
+  border-color: #dc2626;
 }
 
+/* ===== Table ===== */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+caption { text-align: left; font-weight: 700; margin-bottom: 8px; }
+th, td { border: 1px solid #d1d5db; padding: 10px; vertical-align: top; }
+thead th { background: #f3f4f6; }
+tbody tr:nth-child(even) { background: #f9fafb; }
+tbody tr:hover { background: #eef2ff; }
+.total-row td { font-weight: 800; }
 
-/* Note under form */
-.note {
-  margin: 0;
-  color: #374151;
-  font-size: 0.95rem;
-}
-
-/* --- Table styling --- */
-.table-wrap {
-  overflow-x: auto; /* acceptable on narrow screens */
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-caption {
-  text-align: left;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-th, td {
-  border: 1px solid #d1d5db;
-  padding: 10px;
-  vertical-align: top;
-}
-
-thead th {
-  background: #f3f4f6;
-}
-
-tbody tr:nth-child(even) {
-  background: #f9fafb;
-}
-
-tbody tr:hover {
-  background: #eef2ff;
-}
-
-.total-row td {
-  font-weight: 800;
-}
-
-/* --- Mobile breakpoint --- */
+/* ===== Mobile ===== */
 @media (max-width: 600px) {
-  .layout {
-    grid-template-columns: 1fr; /* stack */
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr; /* labels on top */
-  }
-
-  label {
-    text-align: left;
-  }
-
-  .button-row {
-    justify-content: stretch;
-  }
-
-  .button-row button {
-    flex: 1;
-  }
+  .layout { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  label { text-align: left; }
+  .button-row { justify-content: stretch; }
+  .button-row button { flex: 1; }
 }
