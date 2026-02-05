@@ -1,0 +1,153 @@
+
+:root{
+  --bg: #f6f1ea;
+  --panel: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --accent: #8b5a2b;
+  --radius: 16px;
+}
+
+*{ box-sizing: border-box; }
+
+body{
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a{ color: var(--accent); }
+
+.container{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+.panel{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+/* Mobile-first: stacked full width */
+.container > *{ grid-column: 1 / -1; }
+
+/* Complete desktop grid placement here */
+@media (min-width: 768px){
+    
+  .head{ grid-column: 1 / -1; }
+
+  .nav{
+    grid-column: 1 / span 2;
+    grid-row: 2;
+  }
+
+  .content{
+    grid-column: 3 / span 8;
+    grid-row: 2 / span 2;
+  }
+
+  .sidebar{
+    grid-column: 11 / span 2;
+    grid-row: 2;
+  }
+
+  .ads{
+    grid-column: 11 / span 2;
+    grid-row: 3;
+  }
+
+  .footer{
+    grid-column: 1 / -1;
+    grid-row: 4;
+  }
+}
+
+.head img{
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  display: block;
+  margin-top: 10px;
+}
+
+.muted{ color: var(--muted); }
+
+.section-gap{ margin-top: 18px; }
+
+/* Complete nested menu grid here (mobile: 1 column) */
+.menu-grid{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* Complete breakpoint for menu cards (desktop: 3 columns) */
+@media (min-width: 900px){
+  .menu-grid{
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+article{
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff;
+}
+
+.price{
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.actions{
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+button{
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 800;
+  cursor: pointer;
+  background: #fff;
+}
+
+#calcBtn{
+  background: var(--accent);
+  color: #fff;
+  border-color: rgba(0,0,0,0.2);
+}
+
+pre{
+  white-space: pre-wrap;
+  background: rgba(15,23,42,0.03);
+  border: 1px dashed rgba(15,23,42,0.15);
+  padding: 12px;
+  border-radius: 12px;
+  margin: 10px 0 0 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+.weather{
+  background: rgba(22,163,74,0.08);
+  border: 1px solid rgba(22,163,74,0.18);
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 8px;
+}
