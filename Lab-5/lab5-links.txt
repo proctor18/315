@@ -4,4 +4,4 @@ Repository Link:
 https://github.com/proctor18/315/
 
 Website Link:
-https://proctor18.github.io/315/lab5
+https://proctor18.github.io/315/Lab-5
