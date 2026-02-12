@@ -1,0 +1,84 @@
+body {
+    font-family: sans-serif;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+section {
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius:
+        8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    /* TASK 4 Hint: Add transition here for border-color and background-color
+*/
+transition: border-color 0.3s ease-out, background-color 0.3s ease-out;
+
+}
+
+.error-msg {
+    color: red;
+    font-size: 0.9em;
+    display: none;
+}
+
+.error-border {
+    border-color: red !important;
+    background-color: #fff0f0;
+}
+
+/* Gallery Styles */
+.gallery-grid {
+    display: flex;
+    gap: 10px;
+}
+
+.thumb {
+    width: 100px;
+    height: 100px;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    /* TASK 4: Add transitions here (transform + background-color) */
+    transition: transform 0.3s ease-out, background-color 0.3s ease-out;
+
+}
+
+.thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Dynamic Class for Task 4 */
+.expanded {
+    background-color: #60b946;
+    color: white;
+    transform: scale(1.1);
+}

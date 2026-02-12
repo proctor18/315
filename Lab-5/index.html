@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Photo Club Registration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <h1>Join the Travel Photo Club</h1>
+    </header>
+    <main>
+        <section id="gallery">
+            <h2>Featured Shots</h2>
+            <div class="gallery-grid">
+                <!-- TODO: Add the remaining thumbnails (Tokyo, New York, etc.
+at least 3)
+ using real images from Unsplash / Pexels / Pixabay.
+Each thumbnail must contain an <img> and must keep
+tabindex="0" on the .thumb container. -->
+                <div class="thumb" tabindex="0" data-city="Tokyo">
+  <img alt="Tokyo travel photo" title="Photo from Unsplash (unsplash.com)"
+    src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=2094&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
+</div>
+
+<div class="thumb" tabindex="0" data-city="New York">
+  <img alt="New York travel photo" title="Photo from Unsplash (unsplash.com)"
+    src="https://images.unsplash.com/photo-1541336032412-2048a678540d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
+</div>
+
+<div class="thumb" tabindex="0" data-city="Rome">
+  <img alt="Rome travel photo" title="Photo from Unsplash (unsplash.com)"
+    src="https://plus.unsplash.com/premium_photo-1661962723801-1015e61ec340?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
+</div>
+
+            </div>
+            <p id="image-caption"> Click (or press Enter) to select.</p>
+        </section>
+        <section id="registration">
+            <h2>Member Sign Up</h2>
+            <form id="signup-form" novalidate>
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username">
+                    <span class="error-msg" id="error-username"></span>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email">
+                    <span class="error-msg" id="error-email"></span>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password">
+                    <span class="error-msg" id="error-password"></span>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="terms"> I agree to the terms
+                    </label>
+                    <span class="error-msg" id="error-terms"></span>
+                </div>
+                <button type="submit">Register Now</button>
+            </form>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+
+</html>
