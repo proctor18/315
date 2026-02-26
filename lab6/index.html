@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lab 6 — Trivia Challenge (Starter, Ch 9–10)</title>
+
+  <!--
+    ======================================================
+    CMPT 315 — Lab 6 Starter 
+    ======================================================
+
+    WHAT THIS APP DOES (big picture):
+    - A player enters Name + Email (validated).
+    - The app fetches multiple-choice trivia questions from Open Trivia DB (no API key).
+    - The player answers all questions in ONE round.
+    - The app shows a final score AND an Answer Review on the Result screen.
+    - The app saves a BEST SCORE in localStorage (so it survives refresh).
+
+
+    IMPORTANT:
+    - Keep element IDs the same (btnStart, screenQuiz, apiErrorBox, etc.).
+      The JavaScript uses document.getElementById() to locate elements.
+	  
+	- Use const by default for values that do not get reassigned 
+	(e.g., DOM element references, configuration objects, fixed arrays). 
+	Use let only for variables that need to change during execution 
+	(e.g., loop counters, accumulating totals, values updated inside functions).
+  -->
+  <style>
+    /* =========================
+       Task F: Creative UX
+       You may customize colors,
+       fonts, and button styles.
+       ========================= */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #0b1220;
+      color: #eef2ff;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .card {
+      background: #121b2e;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: #0f172a;
+      color: #eef2ff;
+    }
+
+    button {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 0;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    button.secondary {
+      background: rgba(255, 255, 255, 0.10);
+      color: white;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .err {
+      color: #fb7185;
+      min-height: 18px;
+      font-size: 0.9rem;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .notice {
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .choices {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .choiceBtn {
+      text-align: left;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #eef2ff;
+    }
+
+    .choiceBtn:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* ===== Task F: Creative UX theme overrides ===== */
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(900px 600px at 20% 0%, rgba(37, 99, 235, 0.35), transparent 60%),
+        radial-gradient(900px 600px at 80% 0%, rgba(251, 113, 133, 0.25), transparent 60%),
+        #0b1220;
+    }
+
+    .brandLeft {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logoMark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      background: rgba(255, 255, 255, 0.10);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #2563eb, #60a5fa);
+    }
+
+    button.secondary {
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .choiceBtn {
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .card {
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <!-- ============================
+       HEADER / BRAND AREA (Task F)
+       ============================ -->
+    <div class="topbar brand">
+      <div class="brandLeft">
+        <div class="logoMark" aria-hidden="true">Q</div>
+        <h1>Hotel Triviago</h1>
+      </div>
+      <span class="pill">Ch 9-10: DOM + Events + Async APIs + localStorage</span>
+    </div>
+
+    <!-- ============================
+       SCREEN 1: START SCREEN
+       ============================ -->
+    <section class="card" id="screenStart">
+      <h2>Start</h2>
+
+      <div class="notice">
+        <p><b>Goal:</b> Complete one trivia round and see your score.</p>
+        <p><b>Storage:</b> Your best score is saved in <b>localStorage</b> (this browser only).</p>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="name">Name</label>
+          <input id="name" placeholder="Your name" />
+          <div class="err" id="errName"></div>
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input id="email" placeholder="you@example.com" />
+          <div class="err" id="errEmail"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="category">Category (optional)</label>
+          <select id="category">
+            <option value="">Any Category</option>
+            <option value="18">Computers</option>
+            <option value="17">Science & Nature</option>
+            <option value="19">Mathematics</option>
+            <option value="9">General Knowledge</option>
+          </select>
+        </div>
+        <div>
+          <!-- Task D: Difficulty selection -->
+          <label for="mode">Difficulty</label>
+          <select id="mode">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="topbar" style="margin-top:12px;">
+        <button class="primary" id="btnStart">Start Quiz</button>
+        <button class="secondary" id="btnReset">Reset Best Score</button>
+      </div>
+
+      <div style="margin-top:12px;" class="notice" id="progressBox">
+        Best score: not loaded yet…
+      </div>
+    </section>
+
+    <!-- ============================
+       SCREEN 2: QUIZ SCREEN
+       ============================ -->
+    <section class="card hidden" id="screenQuiz">
+      <div class="topbar">
+        <h2 id="quizTitle">Trivia Round</h2>
+        <div>
+          <span class="pill">Score: <b id="score">0</b></span>
+          <span class="pill">Q: <b id="qNum">1</b>/<span id="qTotal">10</span></span>
+        </div>
+      </div>
+
+      <div class="notice hidden" id="loadingBox">Loading questions…</div>
+      <div class="notice hidden" id="apiErrorBox"></div>
+
+      <div class="notice" id="questionText">Question will appear here…</div>
+      <div class="choices" id="choices"></div>
+
+      <div class="topbar" style="margin-top:12px;">
+        <button class="secondary" id="btnQuit">Quit</button>
+      </div>
+    </section>
+
+    <!-- ============================
+       SCREEN 3: RESULT SCREEN
+       ============================ -->
+    <section class="card hidden" id="screenResult">
+      <h2 id="resultTitle">Result</h2>
+      <div class="notice" id="resultText"></div>
+
+      <!-- Task E: Answer Review (displayed at end) -->
+      <div class="notice" id="reviewBox" style="white-space: pre-wrap; margin-top: 10px;">
+        Answer review will appear here…
+      </div>
+
+      <div class="topbar" style="margin-top:12px;">
+        <button class="primary" id="btnPlayAgain">Play Again</button>
+        <button class="secondary" id="btnHome">Home</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+
+    /*
+    Short-Answer Questions
+
+    1) Why do we need async/await when using fetch()?
+
+    fetch() gets data from the internet, and that takes time. It returns a Promise, which means the result is not ready immediately. async/await lets us pause the function until the data arrives, so we can use it safely.
+
+    2) What does OpenTDB response_code mean in your implementation? Explain 0 and 5.
+
+    response_code tells us whether the API request worked. A response_code of 0 means the questions were returned successfully. A response_code of 5 means the API is rate limiting or the token is empty, so we show an error.
+
+    3) What exactly is stored under STORAGE_KEY and why is JSON used?
+
+    We store an object with bestScore, bestTotal, and attempts in localStorage. localStorage only saves strings, so we use JSON.stringify() to convert the object into a string. We use JSON.parse() to turn it back into an object when loading it.
+
+    4) Describe what happens from clicking Start Quiz until the first question is displayed.
+    
+    When Start Quiz is clicked, runRoundFlow() runs. It validates the form, saves the player info, sets the difficulty, and shows the quiz screen. Then it gets a token, fetches the questions from the API, and finally calls renderQuestion() to display the first question.
+  */
+
+
+    /*
+      ======================================================
+      LAB 6 — TRIVIA CHALLENGE 
+      ======================================================
+    
+      COMPLETE THESE TODO ITEMS (Ch. 9–10):
+      - TODO #1 validateStartForm()      (Ch 9)
+      - TODO #2 loadProgress()          (Ch 10 localStorage)
+      - TODO #3 saveProgress(obj)       (Ch 10 localStorage)
+      - TODO #4 getToken()              (Ch 10 fetch + async/await)
+      - TODO #5 fetchQuestions(cfg)     (Ch 10 fetch + response_code handling)
+    
+      
+      - Task D: Difficulty selection
+          * The Difficulty dropdown (id="mode") gives "easy", "medium", or "hard".
+          * You must set ROUND.difficulty based on that selection before fetching questions.
+    
+      - Task E: Show Answer Review at the end
+          * Save the user's chosen answer for each question.
+          * On the Result screen, list each question with:
+              - Your answer
+              - Correct answer
+              - A mark ✓ or ✗
+    
+      NOTE:
+      - Use textContent when showing user data.
+    */
+
+    (function () {
+      "use strict";
+
+      // ------------------------------------------------------
+      // Round configuration
+      // ------------------------------------------------------
+      var ROUND = { difficulty: "easy", amount: 10 };
+
+      // Save best score in this browser (localStorage)
+      var STORAGE_KEY = "lab6_trivia_best";
+
+      // Open Trivia DB endpoints (no API key required)
+      var API = {
+        token: "https://opentdb.com/api_token.php?command=request",
+        questionsUrl: function (amount, difficulty, category, token) {
+          var p = new URLSearchParams();
+          p.set("amount", String(amount));
+          p.set("difficulty", difficulty);
+          p.set("type", "multiple");
+          if (category) { p.set("category", category); }
+          if (token) { p.set("token", token); }
+          return "https://opentdb.com/api.php?" + p.toString();
+        }
+      };
+
+      function $(id) { return document.getElementById(id); }
+
+      // Screens
+      var screenStart = $("screenStart");
+      var screenQuiz = $("screenQuiz");
+      var screenResult = $("screenResult");
+
+      // Inputs
+      var nameInput = $("name");
+      var emailInput = $("email");
+      var categorySelect = $("category");
+      var modeSelect = $("mode");   // Difficulty dropdown: easy/medium/hard
+
+      // Errors
+      var errName = $("errName");
+      var errEmail = $("errEmail");
+
+      // Buttons
+      var btnStart = $("btnStart");
+      var btnReset = $("btnReset");
+      var btnQuit = $("btnQuit");
+      var btnPlayAgain = $("btnPlayAgain");
+      var btnHome = $("btnHome");
+
+      // Progress UI
+      var progressBox = $("progressBox");
+
+      // Quiz UI
+      var quizTitle = $("quizTitle");
+      var scoreEl = $("score");
+      var qNumEl = $("qNum");
+      var qTotalEl = $("qTotal");
+      var questionText = $("questionText");
+      var choicesBox = $("choices");
+
+      // Loading + errors
+      var loadingBox = $("loadingBox");
+      var apiErrorBox = $("apiErrorBox");
+
+      // Result UI
+      var resultTitle = $("resultTitle");
+      var resultText = $("resultText");
+      var reviewBox = $("reviewBox");
+
+      // Runtime state
+      var state = {
+        player: { name: "", email: "", category: "", mode: "easy" },
+        token: null,
+        questions: [],
+        idx: 0,
+        score: 0
+      };
+
+      // Screen helpers
+      function show(el) { el.classList.remove("hidden"); }
+      function hide(el) { el.classList.add("hidden"); }
+
+      function showOnly(which) {
+        hide(screenStart);
+        hide(screenQuiz);
+        hide(screenResult);
+        show(which);
+      }
+
+      function setLoading(on) {
+        if (on) { show(loadingBox); }
+        else { hide(loadingBox); }
+      }
+
+      function setApiError(msg) {
+        if (!msg) {
+          apiErrorBox.textContent = "";
+          hide(apiErrorBox);
+          return;
+        }
+        apiErrorBox.textContent = msg;
+        show(apiErrorBox);
+      }
+
+      function decodeHTMLEntities(s) {
+        var t = document.createElement("textarea");
+        t.innerHTML = s;
+        return t.value;
+      }
+
+      function shuffle(arr) {
+        var a = arr.slice();
+        var i, j, tmp;
+        for (i = a.length - 1; i > 0; i--) {
+          j = Math.floor(Math.random() * (i + 1));
+          tmp = a[i];
+          a[i] = a[j];
+          a[j] = tmp;
+        }
+        return a;
+      }
+
+      // ======================================================
+      // TODO #1 (Ch 9): Form validation
+      // ======================================================
+      function validateStartForm() {
+        // 1) clear previous error messages
+        errName.textContent = "";
+        errEmail.textContent = "";
+
+        // TODO:
+        // - Name: 2–30 characters after trim()
+        // - Email: basic valid shape (example: a@b.com)
+        // - Show errors in errName / errEmail
+        // - Return true if valid else false
+
+        let valid = true;
+
+        // 2) Name validation: 2–30 chars after trim
+        const name = nameInput.value.trim();
+        if (name.length < 2 || name.length > 30) {
+          errName.textContent = "Name must be 2–30 characters.";
+          valid = false;
+        }
+
+        // 3) Email validation: basic valid shape (a@b.com)
+        const email = emailInput.value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          errEmail.textContent = "Enter a valid email (example: a@b.com).";
+          valid = false;
+        }
+
+        // 4) return result
+        return valid;
+      }
+
+      // ======================================================
+      // TODO #2 (Ch 10): Load best score from localStorage
+      // ======================================================
+      function loadProgress() {
+        // TODO: implement robust load:
+        // - Return default { bestScore: 0, bestTotal: 0, attempts: 0 } if missing/invalid
+        const defaultData = { bestScore: 0, bestTotal: 0, attempts: 0 };
+
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+
+          // If nothing stored yet
+          if (!raw) {
+            return defaultData;
+          }
+
+          const parsed = JSON.parse(raw);
+
+          // If somehow invalid or wrong type
+          if (!parsed || typeof parsed !== "object") {
+            return defaultData;
+          }
+
+          return parsed;
+
+        } catch (error) {
+          // If JSON.parse fails
+          return defaultData;
+        }
+      }
+
+      // ======================================================
+      // TODO #3 (Ch 10): Save best score to localStorage
+      // ======================================================
+      function saveProgress(obj) {
+        // TODO: JSON.stringify + localStorage.setItem(STORAGE_KEY, ...)
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+        } catch (error) {
+          // Fail silently if storage is blocked/full
+        }
+      }
+
+      // ======================================================
+      // TODO #4 (Ch 10): Request a token from OpenTDB
+      // ======================================================
+      async function getToken() {
+        // TODO:
+        // - var res = await fetch(API.token)
+        // - if (!res.ok) throw Error(...)
+        // - var data = await res.json()
+        // - if (!data.token) throw Error(...)
+        // - return data.token
+        const res = await fetch(API.token);
+
+        // HTTP-level error (404, 500, etc.)
+        if (!res.ok) {
+          throw new Error("Token request failed (HTTP " + res.status + ").");
+        }
+
+        const data = await res.json();
+
+        // API returned JSON but token missing
+        if (!data || !data.token) {
+          throw new Error("Token missing from API response.");
+        }
+
+        return data.token;
+      }
+
+      // ======================================================
+      // TODO #5 (Ch 10): Fetch questions for the round
+      // ======================================================
+      async function fetchQuestions(cfg) {
+        // TODO:
+        // - build URL using API.questionsUrl(cfg.amount, cfg.difficulty, state.player.category, state.token)
+        // - fetch + await json
+        // - handle response_code:
+        //   0 -> return results
+        //   5 -> throw rate limit error
+        //   else -> throw generic error
+        // build URL using the helper
+        const url = API.questionsUrl(
+          cfg.amount,
+          cfg.difficulty,
+          state.player.category,
+          state.token
+        );
+
+        const res = await fetch(url);
+
+        // HTTP-level error
+        if (!res.ok) {
+          throw new Error("Questions request failed (HTTP " + res.status + ").");
+        }
+
+        const data = await res.json();
+
+        // handle OpenTDB response_code
+        if (data.response_code === 0) {
+          return data.results;
+        }
+
+        if (data.response_code === 5) {
+          throw new Error("OpenTDB rate limit / token empty. Please wait and try again.");
+        }
+
+        throw new Error("OpenTDB error (response_code " + data.response_code + ").");
+
+      }
+
+      // Display best score summary on Start screen
+      function renderBest() {
+        var p = loadProgress();
+        var bestScore = (p && typeof p.bestScore === "number") ? p.bestScore : 0;
+        var bestTotal = (p && typeof p.bestTotal === "number") ? p.bestTotal : 0;
+        var attempts = (p && typeof p.attempts === "number") ? p.attempts : 0;
+
+        if (bestTotal > 0) {
+          progressBox.textContent = "Best score: " + bestScore + "/" + bestTotal + " • Attempts: " + attempts;
+        } else {
+          progressBox.textContent = "Best score: none yet • Attempts: " + attempts;
+        }
+      }
+
+      // Copy inputs into state.player
+      function startFromForm() {
+        state.player.name = nameInput.value.trim();
+        state.player.email = emailInput.value.trim();
+        state.player.category = categorySelect.value;
+        state.player.mode = modeSelect.value; // stores easy/medium/hard
+      }
+
+      function beginRound() {
+        state.questions = [];
+        state.idx = 0;
+        state.score = 0;
+
+        scoreEl.textContent = "0";
+        qNumEl.textContent = "1";
+        qTotalEl.textContent = String(ROUND.amount);
+        setApiError(null);
+      }
+
+      function renderQuestion() {
+        var q = state.questions[state.idx];
+
+        // Show current difficulty in the title
+        quizTitle.textContent = "Trivia Round (" + ROUND.difficulty + ")";
+
+        qTotalEl.textContent = String(ROUND.amount);
+        qNumEl.textContent = String(state.idx + 1);
+
+        questionText.textContent = q.question;
+        choicesBox.innerHTML = "";
+
+        var i;
+        for (i = 0; i < q.choices.length; i++) {
+          (function (choiceText) {
+            var btn = document.createElement("button");
+            btn.className = "choiceBtn";
+            btn.textContent = choiceText;
+
+            btn.addEventListener("click", function () {
+              handleAnswer(choiceText);
+            });
+
+            choicesBox.appendChild(btn);
+          })(q.choices[i]);
+        }
+      }
+
+      function handleAnswer(choiceText) {
+        var q = state.questions[state.idx];
+
+        // --------------------------------------------
+        // Task E (Answer Review) — PARTIAL PROVIDED
+        // --------------------------------------------
+        // TODO (students): Save the user's choice on the question object.
+        // Example:
+        // q.userChoice = choiceText;
+        q.userChoice = choiceText;
+
+        if (choiceText === q.correct) {
+          state.score = state.score + 1;
+          scoreEl.textContent = String(state.score);
+        }
+
+        state.idx = state.idx + 1;
+
+        if (state.idx >= ROUND.amount) {
+          finishRound();
+        } else {
+          renderQuestion();
+        }
+      }
+
+      function finishRound() {
+        showOnly(screenResult);
+
+        resultTitle.textContent = "Result";
+        resultText.textContent = state.player.name + ", your score is " + state.score + "/" + ROUND.amount + ".";
+
+        // --------------------------------------------
+        // Task E (Answer Review) — PARTIAL PROVIDED
+        // --------------------------------------------
+        // We will build a multi-line string and show it in reviewBox.
+        // TODO: Finish the lines that show:
+        // - Your answer (qq.userChoice)
+        // - Correct answer (qq.correct)
+        // - A mark ✓ or ✗ depending on whether they match
+        var lines = [];
+        lines.push("Answer Review (Your answer vs Correct answer):");
+        lines.push("");
+
+        var i;
+        for (i = 0; i < state.questions.length; i++) {
+          var qq = state.questions[i];
+          lines.push((i + 1) + ") " + qq.question);
+
+          // TODO: Add these lines and any ✓/✗ marking you want.
+          // HINT:
+          //  yourAns = qq.userChoice
+          //  ok = (yourAns === qq.correct)
+          //  use lines.push to show ✓ or ✗
+
+          var yourAns = qq.userChoice || "(no answer)";
+          var ok = (yourAns === qq.correct);
+          var mark = ok ? "✓" : "✗";
+
+          lines.push("Your answer: " + yourAns + " " + mark);
+          lines.push("Correct: " + qq.correct);
+
+          lines.push("");
+        }
+
+        // Show the review text on the page
+        reviewBox.textContent = lines.join("\n");
+
+        // Update best score in localStorage
+        var p = loadProgress();
+        var attempts = (p && typeof p.attempts === "number") ? p.attempts : 0;
+        attempts = attempts + 1;
+
+        var bestScore = (p && typeof p.bestScore === "number") ? p.bestScore : 0;
+        var bestTotal = (p && typeof p.bestTotal === "number") ? p.bestTotal : 0;
+
+        if (bestTotal === 0 || state.score > bestScore) {
+          saveProgress({ bestScore: state.score, bestTotal: ROUND.amount, attempts: attempts });
+        } else {
+          saveProgress({ bestScore: bestScore, bestTotal: bestTotal, attempts: attempts });
+        }
+
+        renderBest();
+      }
+
+      async function runRoundFlow() {
+        if (!validateStartForm()) { return; }
+
+        startFromForm();
+
+        // --------------------------------------------------
+        // Task D (Difficulty selection) 
+        // --------------------------------------------------
+        // TODO : Set (ROUND.difficulty) based on the dropdown selection (state - player - mode).
+        // The dropdown provides: "easy", "medium", or "hard"
+        ROUND.difficulty = state.player.mode; // "easy" | "medium" | "hard"
+
+
+        beginRound();
+        showOnly(screenQuiz);
+
+        try {
+          setLoading(true);
+
+          if (!state.token) {
+            state.token = await getToken();
+          }
+
+          var raw = await fetchQuestions(ROUND);
+
+          // Normalize API data into internal format
+          state.questions = [];
+          var i;
+          for (i = 0; i < raw.length; i++) {
+            var item = raw[i];
+
+            var correct = decodeHTMLEntities(item.correct_answer);
+
+            var incorrect = [];
+            var k;
+            for (k = 0; k < item.incorrect_answers.length; k++) {
+              incorrect.push(decodeHTMLEntities(item.incorrect_answers[k]));
+            }
+
+            var choices = shuffle([correct].concat(incorrect));
+
+            state.questions.push({
+              question: decodeHTMLEntities(item.question),
+              correct: correct,
+              choices: choices
+            });
+          }
+
+          setLoading(false);
+          renderQuestion();
+
+        } catch (e) {
+          setLoading(false);
+          setApiError(e.message || "Network / API error.");
+        }
+      }
+
+      // Event listeners
+      btnStart.addEventListener("click", function () {
+        runRoundFlow();
+      });
+
+      btnReset.addEventListener("click", function () {
+        localStorage.removeItem(STORAGE_KEY);
+        renderBest();
+        alert("Best score reset.");
+      });
+
+      btnQuit.addEventListener("click", function () {
+        showOnly(screenStart);
+      });
+
+      btnPlayAgain.addEventListener("click", function () {
+        runRoundFlow();
+      });
+
+      btnHome.addEventListener("click", function () {
+        showOnly(screenStart);
+      });
+
+      // Boot
+      renderBest();
+      showOnly(screenStart);
+
+    })();
+  </script>
+</body>
+
+</html>
